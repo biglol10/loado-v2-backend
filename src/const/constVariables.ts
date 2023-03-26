@@ -25,4 +25,15 @@ const marketItemsArr = [
   "에스더의 기운",
 ];
 
-export { marketItemsArr };
+const auctionItemsArr = [
+  "10레벨 멸화의 보석",
+  "10레벨 홍염의 보석",
+  "9레벨 멸화의 보석",
+  "9레벨 홍염의 보석",
+  "8레벨 멸화의 보석",
+  "8레벨 홍염의 보석",
+  "7레벨 멸화의 보석",
+  "7레벨 홍염의 보석",
+];
+
+export { marketItemsArr, auctionItemsArr };

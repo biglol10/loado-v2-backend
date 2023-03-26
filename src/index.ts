@@ -9,7 +9,6 @@ import cron from "node-cron";
 import { errorHandler } from "./middleware/middlewares";
 import lostArkItemPriceRoute from "./routes/itemPrice";
 import connectDB from "./db/mongoDB";
-import { saveMarketItemsPrice } from "./cronJob/cronFunctions";
 import { kstJob } from "./utils/cronUtil";
 
 dayjs.extend(utc);
@@ -45,4 +44,5 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-cron.schedule("* * * * *", kstJob);
+// cron.schedule("* * * * *", kstJob);
+cron.schedule("0 0,6,12,18 1-31 * *", kstJob);
