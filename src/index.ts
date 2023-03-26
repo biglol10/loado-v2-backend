@@ -45,4 +45,5 @@ app.listen(port, () => {
 });
 
 // cron.schedule("* * * * *", kstJob);
-cron.schedule("0 0,6,12,18 1-31 * *", kstJob);
+// 18 = 새벽 3시, 16 = 새벽1시, 21 = 아침6시, 3 = 12시, 9 = 18시
+cron.schedule("0 3,9,16,21 1-31 * *", kstJob);
