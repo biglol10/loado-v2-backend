@@ -17,6 +17,9 @@ const kstJob = async () => {
     kstTime.second() === 0
   ) {
     try {
+      // 00시엔 서버작업 때문인지 에러 발생
+      if (kstTime.hour() === 0)
+        await new Promise((res) => setTimeout(res, 300000));
       console.log("came to 6hour", kstTime.format());
       await saveMarketItemsPrice();
       await saveBookItemsPrice();

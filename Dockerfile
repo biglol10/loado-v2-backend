@@ -19,6 +19,6 @@ COPY . .
 RUN npm run build
 
 EXPOSE 3000
-### 채팅 내역 보내고 난 뒤 소캣이 비어있어 상대방은 채팅을 받지 못하는 문제가 있어 우선 dev로 구동
-# CMD [ "npm", "run", "startProduction" ]
-CMD [ "npm", "run", "serve" ]
+
+# npm run start에 ts-node가 있어 CustomError가 먹히지 않음... 그래서 dev로 함
+CMD [ "npm", "run", "dev" ]
