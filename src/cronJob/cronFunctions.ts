@@ -2,6 +2,7 @@ import { marketItemsArr, auctionItemsArr } from "@src/const/constVariables";
 import BaseService from "@src/axios/BaseService";
 import MarketItemModel from "@src/models/MarketItem";
 import AuctionItemModel from "@src/models/AuctionItem";
+import CustomError from "@src/utils/CustomError";
 
 interface MarketItemRecordObj {
   Id: Number;
@@ -73,15 +74,19 @@ const saveMarketItemsPrice = async () => {
           currentMinPrice: exactItem.CurrentMinPrice,
         });
 
-        newMarketRecord
-          .save()
-          .then(() => console.log("Market Record created successfully"))
-          .catch((err) => console.log("Error creating Market Record:", err));
+        await newMarketRecord.save();
       } catch {
-        throw new Error("Item not found");
+        throw new CustomError("something wrong inside hasOwnProperty", {
+          itemResItems: itemRes["Items"],
+          origin: "[saveMarketItemsPrice]",
+        });
       }
     } else {
-      throw new Error("Item not found");
+      throw new CustomError("Items property does not exist", {
+        itemResItems: itemRes,
+        itemName,
+        origin: "[saveBookItemsPrice]",
+      });
     }
   }
 };
@@ -106,7 +111,7 @@ const saveBookItemsPrice = async () => {
       try {
         const bookItemsArr = itemRes["Items"];
 
-        bookItemsArr.map((bookItem: MarketItemRecordObj) => {
+        for (let bookItem of bookItemsArr) {
           const newBookRecord = new MarketItemModel({
             itemId: bookItem.Id,
             itemName: bookItem.Name,
@@ -116,16 +121,33 @@ const saveBookItemsPrice = async () => {
             currentMinPrice: bookItem.CurrentMinPrice,
           });
 
-          newBookRecord
-            .save()
-            .then(() => console.log("Market Record created successfully"))
-            .catch((err) => console.log("Error creating Market Record:", err));
-        });
+          await newBookRecord.save();
+        }
+
+        // bookItemsArr.map(async (bookItem: MarketItemRecordObj) => {
+        //   const newBookRecord = new MarketItemModel({
+        //     itemId: bookItem.Id,
+        //     itemName: bookItem.Name,
+        //     itemGrade: bookItem.Grade,
+        //     yDayAvgPrice: bookItem.YDayAvgPrice,
+        //     recentPrice: bookItem.RecentPrice,
+        //     currentMinPrice: bookItem.CurrentMinPrice,
+        //   });
+
+        //   await newBookRecord.save();
+        // });
       } catch {
-        throw new Error("Item not found");
+        throw new CustomError("something wrong inside hasOwnProperty", {
+          itemResItems: itemRes["Items"],
+          origin: "[saveBookItemsPrice]",
+        });
       }
     } else {
-      throw new Error("Item not found");
+      throw new CustomError("Items property does not exist", {
+        itemResItems: itemRes,
+        pageNo,
+        origin: "[saveBookItemsPrice]",
+      });
     }
   }
 };
@@ -134,7 +156,7 @@ const saveGemItemsPrice = async () => {
   for (const gemName of auctionItemsArr) {
     const itemRes = await BaseService.request({
       method: "post",
-      url: "/markets/items",
+      url: "/auctions/items",
       data: {
         ItemLevelMin: 0,
         ItemLevelMax: 1700,
@@ -162,15 +184,19 @@ const saveGemItemsPrice = async () => {
           options: [...extractOneGem.Options],
         });
 
-        newAuctionRecord
-          .save()
-          .then(() => console.log("Auction Record created successfully"))
-          .catch((err) => console.log("Error creating Auction Record:", err));
+        await newAuctionRecord.save();
       } catch {
-        throw new Error("Auction Item not found");
+        throw new CustomError("something wrong inside hasOwnProperty", {
+          itemResItems: itemRes["Items"],
+          origin: "[saveGemItemsPrice]",
+        });
       }
     } else {
-      throw new Error("Auction Item not found");
+      throw new CustomError("Items property does not exist", {
+        itemResItems: itemRes,
+        gemName,
+        origin: "[saveGemItemsPrice]",
+      });
     }
   }
 };

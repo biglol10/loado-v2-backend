@@ -1,17 +1,50 @@
 // middlewares.ts
 import { Request, Response, NextFunction, RequestHandler } from "express";
+import ErrorLogModel from "@src/models/ErrorLog";
+import CustomError from "@src/utils/CustomError";
 
 interface CustomRequest extends Request {
   [keyVal: string]: any;
 }
 
-export const errorHandler = (
+export const errorHandler = async (
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  res.status(500).send(err.message || "An error occurred");
+  if (err instanceof CustomError) {
+    const newErrorRecord = new ErrorLogModel({
+      message: err.message,
+      stackTrace: err.stack,
+      metadata: err.data,
+    });
+
+    await newErrorRecord.save();
+
+    return res.status(400).json({
+      message: err.message,
+      data: err.data,
+    });
+  } else {
+    const newErrorRecord = new ErrorLogModel({
+      message: err.message || "Error Occured",
+      stackTrace: err.stack || "Error Stack",
+      metadata: {
+        method: req.method,
+        url: req.url,
+      },
+    });
+    await newErrorRecord.save();
+
+    return res.status(400).json({
+      message: err.message || "Error Occured",
+      data: {
+        method: req.method,
+        url: req.url,
+      },
+    });
+  }
 };
 
 export const asyncHandler =

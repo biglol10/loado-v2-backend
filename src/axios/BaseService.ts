@@ -1,3 +1,4 @@
+import ErrorLogModel from "@src/models/ErrorLog";
 import axiosInstance from "./AxiosInstance";
 
 const RPS = 60 * 1020;
@@ -70,11 +71,22 @@ class BaseService {
         console.log(
           `came to Request Limit with MAX_RETCNT=${MAX_RETCNT} exceeded`
         );
-        throw new Error("Rate Limit Exceeded");
+
+        const newErrorRecord = new ErrorLogModel({
+          message:
+            "came to Request Limit with MAX_RETCNT=${MAX_RETCNT} exceeded",
+          metadata: {
+            data,
+            method,
+            url,
+          },
+        });
+
+        await newErrorRecord.save();
       }
     }
 
-    return error;
+    return null;
   }
 }
 

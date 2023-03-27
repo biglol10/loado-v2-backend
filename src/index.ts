@@ -37,13 +37,10 @@ app.get("/", (req, res) => {
 // this should be below controller to use
 app.use(errorHandler);
 
-// saveMarketItemsPrice();
-
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
 // cron.schedule("* * * * *", kstJob);
-// 18 = 새벽 3시, 16 = 새벽1시, 21 = 아침6시, 3 = 12시, 9 = 18시
-cron.schedule("0 3,9,16,21 1-31 * *", kstJob);
+cron.schedule("* * * * *", kstJob);
