@@ -23,7 +23,7 @@ const marketItemsArr = [
   "야금술 : 단조 숙련",
   "야금술 : 단조 특화",
   "에스더의 기운",
-];
+] as const;
 
 const auctionItemsArr = [
   "10레벨 멸화의 보석",
@@ -34,6 +34,6 @@ const auctionItemsArr = [
   "8레벨 홍염의 보석",
   "7레벨 멸화의 보석",
   "7레벨 홍염의 보석",
-];
+] as const;
 
 export { marketItemsArr, auctionItemsArr };

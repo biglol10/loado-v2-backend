@@ -76,17 +76,23 @@ const saveMarketItemsPrice = async () => {
 
         await newMarketRecord.save();
       } catch {
-        throw new CustomError("something wrong inside hasOwnProperty", {
-          itemResItems: itemRes["Items"],
-          origin: "[saveMarketItemsPrice]",
-        });
+        throw new CustomError(
+          "[saveMarketItemsPrice] something wrong inside hasOwnProperty",
+          {
+            itemResItems: itemRes,
+            origin: "[saveMarketItemsPrice]",
+          }
+        );
       }
     } else {
-      throw new CustomError("Items property does not exist", {
-        itemResItems: itemRes,
-        itemName,
-        origin: "[saveBookItemsPrice]",
-      });
+      throw new CustomError(
+        "[saveMarketItemsPrice] Items property does not exist",
+        {
+          itemResItems: itemRes,
+          itemName,
+          origin: "[saveBookItemsPrice]",
+        }
+      );
     }
   }
 };
@@ -137,17 +143,23 @@ const saveBookItemsPrice = async () => {
         //   await newBookRecord.save();
         // });
       } catch {
-        throw new CustomError("something wrong inside hasOwnProperty", {
-          itemResItems: itemRes["Items"],
-          origin: "[saveBookItemsPrice]",
-        });
+        throw new CustomError(
+          "[saveBookItemsPrice] something wrong inside hasOwnProperty",
+          {
+            itemResItems: itemRes,
+            origin: "[saveBookItemsPrice]",
+          }
+        );
       }
     } else {
-      throw new CustomError("Items property does not exist", {
-        itemResItems: itemRes,
-        pageNo,
-        origin: "[saveBookItemsPrice]",
-      });
+      throw new CustomError(
+        "[saveBookItemsPrice] Items property does not exist",
+        {
+          itemResItems: itemRes,
+          pageNo,
+          origin: "[saveBookItemsPrice]",
+        }
+      );
     }
   }
 };
@@ -186,17 +198,23 @@ const saveGemItemsPrice = async () => {
 
         await newAuctionRecord.save();
       } catch {
-        throw new CustomError("something wrong inside hasOwnProperty", {
-          itemResItems: itemRes["Items"],
-          origin: "[saveGemItemsPrice]",
-        });
+        throw new CustomError(
+          "[saveGemItemsPrice] something wrong inside hasOwnProperty",
+          {
+            itemResItems: itemRes,
+            origin: "[saveGemItemsPrice]",
+          }
+        );
       }
     } else {
-      throw new CustomError("Items property does not exist", {
-        itemResItems: itemRes,
-        gemName,
-        origin: "[saveGemItemsPrice]",
-      });
+      throw new CustomError(
+        "[saveGemItemsPrice] Items property does not exist",
+        {
+          itemResItems: itemRes,
+          gemName,
+          origin: "[saveGemItemsPrice]",
+        }
+      );
     }
   }
 };
