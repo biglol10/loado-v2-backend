@@ -3,6 +3,8 @@ import BaseService from "@src/axios/BaseService";
 import MarketItemModel from "@src/models/MarketItem";
 import AuctionItemModel from "@src/models/AuctionItem";
 import CustomError from "@src/utils/CustomError";
+import MarketItemStatsModel from "@src/models/MarketItemStats";
+import dayjs from "dayjs";
 
 interface MarketItemRecordObj {
   Id: Number;
@@ -98,7 +100,8 @@ const saveMarketItemsPrice = async () => {
 };
 
 const saveBookItemsPrice = async () => {
-  for (let pageNo = 1; pageNo <= 3; pageNo++) {
+  const bookNameArr = [];
+  for (let pageNo = 1; pageNo <= 5; pageNo++) {
     const itemRes = await BaseService.request({
       method: "post",
       url: "/markets/items",
@@ -118,6 +121,7 @@ const saveBookItemsPrice = async () => {
         const bookItemsArr = itemRes["Items"];
 
         for (let bookItem of bookItemsArr) {
+          bookNameArr.push(bookItem.Name);
           const newBookRecord = new MarketItemModel({
             itemId: bookItem.Id,
             itemName: bookItem.Name,
@@ -129,19 +133,6 @@ const saveBookItemsPrice = async () => {
 
           await newBookRecord.save();
         }
-
-        // bookItemsArr.map(async (bookItem: MarketItemRecordObj) => {
-        //   const newBookRecord = new MarketItemModel({
-        //     itemId: bookItem.Id,
-        //     itemName: bookItem.Name,
-        //     itemGrade: bookItem.Grade,
-        //     yDayAvgPrice: bookItem.YDayAvgPrice,
-        //     recentPrice: bookItem.RecentPrice,
-        //     currentMinPrice: bookItem.CurrentMinPrice,
-        //   });
-
-        //   await newBookRecord.save();
-        // });
       } catch {
         throw new CustomError(
           "[saveBookItemsPrice] something wrong inside hasOwnProperty",
@@ -162,6 +153,7 @@ const saveBookItemsPrice = async () => {
       );
     }
   }
+  return bookNameArr;
 };
 
 const saveGemItemsPrice = async () => {
@@ -219,4 +211,188 @@ const saveGemItemsPrice = async () => {
   }
 };
 
-export { saveMarketItemsPrice, saveBookItemsPrice, saveGemItemsPrice };
+const calcMarketItemsStats = async () => {
+  try {
+    for (const itemName of marketItemsArr) {
+      const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
+      const stats = await MarketItemModel.aggregate([
+        {
+          $match: {
+            itemName: itemName,
+            createdAt: { $gte: currentDate },
+          },
+        },
+        {
+          $group: {
+            _id: "$itemName",
+            minItemPrice: { $min: "$currentMinPrice" },
+            maxItemPrice: { $max: "$currentMinPrice" },
+            avgItemPrice: { $avg: "$currentMinPrice" },
+          },
+        },
+      ]);
+
+      if (stats.length > 0) {
+        const itemStats = stats[0];
+
+        // Update or create a new MarketItemStats record
+        await MarketItemStatsModel.findOneAndUpdate(
+          { itemName: itemStats._id, date: currentDate },
+          {
+            itemName: itemStats._id,
+            date: currentDate,
+            minCurrentMinPrice: itemStats.minItemPrice,
+            maxCurrentMinPrice: itemStats.maxItemPrice,
+            avgCurrentMinPrice: itemStats.avgItemPrice,
+          },
+          { upsert: true }
+        );
+      }
+    }
+  } catch {
+    throw new CustomError("[calcMarketItemsStats] error when aggregating", {
+      origin: "[calcMarketItemsStats]",
+    });
+  }
+};
+
+const calcBookItemsStats = async (bookNameArr: string[]) => {
+  try {
+    for (const bookName of bookNameArr) {
+      const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
+      const stats = await MarketItemModel.aggregate([
+        {
+          $match: {
+            itemName: bookName,
+            createdAt: { $gte: currentDate },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              day: { $dayOfMonth: "$date" },
+              month: { $month: "$date" },
+              year: { $year: "$date" },
+              itemName: "$itemName",
+            },
+            minItemPrice: { $min: "$currentMinPrice" },
+            maxItemPrice: { $max: "$currentMinPrice" },
+            avgItemPrice: { $avg: "$currentMinPrice" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            itemName: "$_id.itemName",
+            formattedDate: 1,
+            avgItemPrice: 1,
+            minItemPrice: 1,
+            maxItemPrice: 1,
+          },
+        },
+      ]);
+
+      if (stats.length > 0) {
+        const itemStats = stats[0];
+
+        await MarketItemStatsModel.findOneAndUpdate(
+          { itemName: itemStats.itemName, date: currentDate },
+          {
+            itemName: itemStats.itemName,
+            date: currentDate,
+            minCurrentMinPrice: itemStats.minItemPrice,
+            maxCurrentMinPrice: itemStats.maxItemPrice,
+            avgCurrentMinPrice: itemStats.avgItemPrice,
+          },
+          { upsert: true }
+        );
+      }
+    }
+  } catch {
+    throw new CustomError("[calcBookItemsStats] error when aggregating", {
+      origin: "[calcBookItemsStats]",
+    });
+  }
+};
+
+const calcAuctionItemsStats = async () => {
+  try {
+    for (const gemName of auctionItemsArr) {
+      const startDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
+      const endDate = dayjs()
+        .tz("Asia/Seoul")
+        .add(1, "day")
+        .format("YYYY-MM-DD");
+      const aggregatedData = await AuctionItemModel.aggregate([
+        {
+          $addFields: {
+            date: {
+              $dateFromString: {
+                dateString: "$createdAt",
+              },
+            },
+          },
+        },
+        {
+          $match: {
+            itemName: gemName,
+            date: {
+              $gte: new Date(startDate),
+              $lte: new Date(endDate),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$itemName",
+            avgBuyPrice: { $avg: "$auctionInfo.BuyPrice" },
+            minBuyPrice: { $min: "$auctionInfo.BuyPrice" },
+            maxBuyPrice: { $max: "$auctionInfo.BuyPrice" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            itemName: "$_id",
+            avgBuyPrice: 1,
+            minBuyPrice: 1,
+            maxBuyPrice: 1,
+          },
+        },
+      ]);
+
+      if (aggregatedData.length > 0) {
+        const { avgBuyPrice, minBuyPrice, maxBuyPrice, itemName } =
+          aggregatedData[0];
+
+        // Update or create a new MarketItemStatsModel record
+        await MarketItemStatsModel.findOneAndUpdate(
+          { itemName, date: startDate },
+          {
+            itemName: gemName,
+            avgCurrentMinPrice: avgBuyPrice,
+            minCurrentMinPrice: minBuyPrice,
+            maxCurrentMinPrice: maxBuyPrice,
+            date: startDate,
+          },
+          {
+            upsert: true,
+          }
+        );
+      }
+    }
+  } catch {
+    throw new CustomError("[calcAuctionItemsStats] error when aggregating", {
+      origin: "[calcAuctionItemsStats]",
+    });
+  }
+};
+
+export {
+  saveMarketItemsPrice,
+  saveBookItemsPrice,
+  saveGemItemsPrice,
+  calcMarketItemsStats,
+  calcBookItemsStats,
+  calcAuctionItemsStats,
+};

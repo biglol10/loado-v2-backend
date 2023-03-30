@@ -3,6 +3,9 @@ import {
   saveMarketItemsPrice,
   saveBookItemsPrice,
   saveGemItemsPrice,
+  calcMarketItemsStats,
+  calcBookItemsStats,
+  calcAuctionItemsStats,
 } from "@src/cronJob/cronFunctions";
 import ErrorLogModel from "@src/models/ErrorLog";
 import CustomError from "./CustomError";
@@ -12,18 +15,25 @@ const kstJob = async () => {
 
   // Check if the current time in KST is 00:00, 06:00, 12:00, or 18:00
   if (
-    kstTime.hour() % 6 === 0 &&
-    kstTime.minute() === 0 &&
-    kstTime.second() === 0
+    ((kstTime.hour() === 6 || kstTime.hour() === 12 || kstTime.hour() === 18) &&
+      kstTime.minute() === 0 &&
+      kstTime.second() === 0) ||
+    (kstTime.hour() === 0 && kstTime.minute() === 30 && kstTime.second() === 0)
   ) {
     try {
-      // 00시엔 서버작업 때문인지 에러 발생
-      if (kstTime.hour() === 0)
-        await new Promise((res) => setTimeout(res, 1800000));
+      // // 00시엔 서버작업 때문인지 에러 발생
+      // if (kstTime.hour() === 0)
+      //   await new Promise((res) => setTimeout(res, 1800000));
+
       console.log("came to 6hour", kstTime.format());
       await saveMarketItemsPrice();
-      await saveBookItemsPrice();
+      const bookNameArr = await saveBookItemsPrice();
       await saveGemItemsPrice(); // await 안 쓰면 에러 났을 때 catch clause에 안 가는듯
+
+      // aggregate 작업 (반정규화)
+      await calcMarketItemsStats();
+      await calcBookItemsStats(bookNameArr);
+      await calcAuctionItemsStats();
     } catch (err) {
       if (err instanceof CustomError) {
         const newErrorRecord = new ErrorLogModel({

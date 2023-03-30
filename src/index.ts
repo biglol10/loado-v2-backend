@@ -7,7 +7,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import cron from "node-cron";
 import { errorHandler } from "./middleware/middlewares";
-// import lostArkItemPriceRoute from "./routes/itemPrice";
+import lostArkItemPriceRoute from "./routes/itemPrice";
 import connectDB from "./db/mongoDB";
 import { kstJob } from "./utils/cronUtil";
 
@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 
-// app.use("/api/lostArkItemPrice", lostArkItemPriceRoute);
+app.use("/api/loadoPrice", lostArkItemPriceRoute);
 
 // Sample route
 // this should be below the routes or it will cause error
