@@ -23,6 +23,8 @@ const marketItemsArr = [
   "야금술 : 단조 숙련",
   "야금술 : 단조 특화",
   "에스더의 기운",
+  "수호강석",
+  "정제된 수호강석",
 ] as const;
 
 const auctionItemsArr = [

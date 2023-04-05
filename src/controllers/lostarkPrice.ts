@@ -10,84 +10,109 @@ export const getLostArkMarketItemPrice = asyncHandler(
 
 export const getCurrentMarketItemPrice = asyncHandler(
   async (req, res, next) => {
-    const startDate = "2023-03-26";
-    const endDate = dayjs("2023-03-28").add(1, "day").format("YYYY-MM-DD");
+    console.log(req.body.itemList as string[]);
 
-    const model = await MarketItemModel.aggregate([
-      {
-        $addFields: {
-          date: {
-            $dateFromString: {
-              dateString: "$createdAt",
-            },
-          },
-        },
-      },
-      {
-        $match: {
-          date: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            day: { $dayOfMonth: "$date" },
-            month: { $month: "$date" },
-            year: { $year: "$date" },
-            itemName: "$itemName",
-          },
-          avgCurrentMinPrice: { $avg: "$currentMinPrice" },
-          minCurrentMinPrice: { $min: "$currentMinPrice" },
-          maxCurrentMinPrice: { $max: "$currentMinPrice" },
-        },
-      },
-      {
-        $addFields: {
-          formattedDate: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: {
-                $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
-                  day: "$_id.day",
-                },
-              },
-            },
-          },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          itemName: "$_id.itemName",
-          formattedDate: 1,
-          avgCurrentMinPrice: 1,
-          minCurrentMinPrice: 1,
-          maxCurrentMinPrice: 1,
-        },
-      },
-      {
-        $sort: { formattedDate: 1, itemName: 1 },
-      },
-    ])
-      .then((result) => {
-        return res.status(200).json({
-          result: "success",
-          data: result,
-        });
+    const itemList = req.body.itemList as string[];
+
+    const resultArr = [];
+
+    for (let itemName of itemList) {
+      const itemPriceResult = await MarketItemModel.findOne({
+        itemName,
       })
-      .catch((err) => {
-        return res.status(400).json({
-          result: "success",
-          err,
-        });
-      });
+        .select("-_id itemId itemName currentMinPrice")
+        .sort({ createdAt: -1 });
+
+      resultArr.push(itemPriceResult);
+    }
+
+    return res.status(200).json({
+      result: "success",
+      resultArr,
+    });
   }
 );
+
+// export const getCurrentMarketItemPrice = asyncHandler(
+//   async (req, res, next) => {
+//     const startDate = "2023-03-26";
+//     const endDate = dayjs("2023-03-28").add(1, "day").format("YYYY-MM-DD");
+
+//     const model = await MarketItemModel.aggregate([
+//       {
+//         $addFields: {
+//           date: {
+//             $dateFromString: {
+//               dateString: "$createdAt",
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $match: {
+//           date: {
+//             $gte: new Date(startDate),
+//             $lte: new Date(endDate),
+//           },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             day: { $dayOfMonth: "$date" },
+//             month: { $month: "$date" },
+//             year: { $year: "$date" },
+//             itemName: "$itemName",
+//           },
+//           avgCurrentMinPrice: { $avg: "$currentMinPrice" },
+//           minCurrentMinPrice: { $min: "$currentMinPrice" },
+//           maxCurrentMinPrice: { $max: "$currentMinPrice" },
+//         },
+//       },
+//       {
+//         $addFields: {
+//           formattedDate: {
+//             $dateToString: {
+//               format: "%Y-%m-%d",
+//               date: {
+//                 $dateFromParts: {
+//                   year: "$_id.year",
+//                   month: "$_id.month",
+//                   day: "$_id.day",
+//                 },
+//               },
+//             },
+//           },
+//         },
+//       },
+//       {
+//         $project: {
+//           _id: 0,
+//           itemName: "$_id.itemName",
+//           formattedDate: 1,
+//           avgCurrentMinPrice: 1,
+//           minCurrentMinPrice: 1,
+//           maxCurrentMinPrice: 1,
+//         },
+//       },
+//       {
+//         $sort: { formattedDate: 1, itemName: 1 },
+//       },
+//     ])
+//       .then((result) => {
+//         return res.status(200).json({
+//           result: "success",
+//           data: result,
+//         });
+//       })
+//       .catch((err) => {
+//         return res.status(400).json({
+//           result: "success",
+//           err,
+//         });
+//       });
+//   }
+// );
 
 export const getCurrentAuctionItemPrice = asyncHandler(
   async (req, res, next) => {

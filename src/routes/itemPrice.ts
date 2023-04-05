@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/lostArkMarketItemPrice", setLostArkMarketItemPrice);
 
-router.get("/currentMarketItemPrice", getCurrentMarketItemPrice);
+router.post("/currentMarketItemPrice", getCurrentMarketItemPrice);
 router.get("/currentAuctionItemPrice", getCurrentAuctionItemPrice);
 
 export default router;
