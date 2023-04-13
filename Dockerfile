@@ -21,4 +21,4 @@ RUN npm run build
 EXPOSE 3000
 
 # npm run start에 ts-node가 있어 CustomError가 먹히지 않음... 그래서 dev로 함
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "start:Docker" ]

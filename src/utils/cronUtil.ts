@@ -13,6 +13,8 @@ import CustomError from "./CustomError";
 const kstJob = async () => {
   const kstTime = dayjs().tz("Asia/Seoul");
 
+  if (process.env.NODE_ENV === "development") return;
+
   // Check if the current time in KST is 00:00, 06:00, 12:00, or 18:00
   if (
     ((kstTime.hour() === 6 || kstTime.hour() === 12 || kstTime.hour() === 18) &&
