@@ -10,8 +10,6 @@ export const getLostArkMarketItemPrice = asyncHandler(
 
 export const getCurrentMarketItemPrice = asyncHandler(
   async (req, res, next) => {
-    console.log(req.body.itemList as string[]);
-
     const itemList = req.body.itemList as string[];
 
     const resultArr = [];
