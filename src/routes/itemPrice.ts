@@ -3,7 +3,7 @@ import {
   setLostArkMarketItemPrice,
   getCurrentMarketItemPrice,
   getCurrentAuctionItemPrice,
-} from "@src/controllers/lostarkPrice";
+} from "../controllers/lostarkPrice";
 
 const router = Router();
 

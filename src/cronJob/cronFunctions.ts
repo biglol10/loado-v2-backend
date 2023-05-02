@@ -1,9 +1,9 @@
-import { marketItemsArr, auctionItemsArr } from "@src/const/constVariables";
-import BaseService from "@src/axios/BaseService";
-import MarketItemModel from "@src/models/MarketItem";
-import AuctionItemModel from "@src/models/AuctionItem";
-import CustomError from "@src/utils/CustomError";
-import MarketItemStatsModel from "@src/models/MarketItemStats";
+import { marketItemsArr, auctionItemsArr } from "../const/constVariables";
+import BaseService from "../axios/BaseService";
+import MarketItemModel from "../models/MarketItem";
+import AuctionItemModel from "../models/AuctionItem";
+import CustomError from "../utils/CustomError";
+import MarketItemStatsModel from "../models/MarketItemStats";
 import dayjs from "dayjs";
 
 interface MarketItemRecordObj {

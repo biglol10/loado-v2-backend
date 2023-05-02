@@ -6,8 +6,8 @@ import {
   calcMarketItemsStats,
   calcBookItemsStats,
   calcAuctionItemsStats,
-} from "@src/cronJob/cronFunctions";
-import ErrorLogModel from "@src/models/ErrorLog";
+} from "../cronJob/cronFunctions";
+import ErrorLogModel from "../models/ErrorLog";
 import CustomError from "./CustomError";
 
 const kstJob = async () => {

@@ -1,4 +1,4 @@
-import ErrorLogModel from "@src/models/ErrorLog";
+import ErrorLogModel from "../models/ErrorLog";
 import axiosInstance from "./AxiosInstance";
 
 const RPS = 60 * 1020;

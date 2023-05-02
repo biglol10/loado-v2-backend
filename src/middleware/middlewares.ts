@@ -1,7 +1,7 @@
 // middlewares.ts
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import ErrorLogModel from "@src/models/ErrorLog";
-import CustomError from "@src/utils/CustomError";
+import ErrorLogModel from "../models/ErrorLog";
+import CustomError from "../utils/CustomError";
 
 interface CustomRequest extends Request {
   [keyVal: string]: any;
