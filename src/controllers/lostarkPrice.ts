@@ -35,12 +35,6 @@ export const getCurrentMarketItemPrice = asyncHandler(
 export const getPeriodMarketItemPrice = asyncHandler(async (req, res, next) => {
   const { itemName, startDate, endDate } = req.query;
 
-  console.log(req);
-
-  console.log(`itemName is ${itemName}`);
-  console.log(`startDate is ${startDate}`);
-  console.log(`endDate is ${endDate}`);
-
   const data = await MarketItemStatsModel.find({
     itemName: itemName,
     date: {
