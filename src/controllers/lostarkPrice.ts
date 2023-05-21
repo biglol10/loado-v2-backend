@@ -3,6 +3,7 @@ import BaseService from "../axios/BaseService";
 import MarketItemModel from "../models/MarketItem";
 import dayjs from "dayjs";
 import AuctionItemModel from "../models/AuctionItem";
+import MarketItemStatsModel from "../models/MarketItemStats";
 
 export const getLostArkMarketItemPrice = asyncHandler(
   async (req, res, next) => {}
@@ -30,6 +31,29 @@ export const getCurrentMarketItemPrice = asyncHandler(
     });
   }
 );
+
+export const getPeriodMarketItemPrice = asyncHandler(async (req, res, next) => {
+  const { itemName, startDate, endDate } = req.query;
+
+  console.log(req);
+
+  console.log(`itemName is ${itemName}`);
+  console.log(`startDate is ${startDate}`);
+  console.log(`endDate is ${endDate}`);
+
+  const data = await MarketItemStatsModel.find({
+    itemName: itemName,
+    date: {
+      $gte: startDate,
+      $lte: endDate,
+    },
+  });
+
+  return res.status(200).json({
+    result: "success",
+    data,
+  });
+});
 
 // export const getCurrentMarketItemPrice = asyncHandler(
 //   async (req, res, next) => {
@@ -114,8 +138,8 @@ export const getCurrentMarketItemPrice = asyncHandler(
 
 export const getCurrentAuctionItemPrice = asyncHandler(
   async (req, res, next) => {
-    const startDate = "2023-03-26";
-    const endDate = dayjs("2023-03-28").add(1, "day").format("YYYY-MM-DD");
+    const startDate = "2023-04-01";
+    const endDate = dayjs("2023-04-28").add(1, "day").format("YYYY-MM-DD");
 
     const model = await AuctionItemModel.aggregate([
       {
