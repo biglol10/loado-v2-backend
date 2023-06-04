@@ -4,6 +4,7 @@ import MarketItemModel from "../models/MarketItem";
 import dayjs from "dayjs";
 import AuctionItemModel from "../models/AuctionItem";
 import MarketItemStatsModel from "../models/MarketItemStats";
+import { extractNumber } from "../utils/customFunc";
 
 export const getLostArkMarketItemPrice = asyncHandler(
   async (req, res, next) => {}
@@ -46,6 +47,80 @@ export const getPeriodMarketItemPrice = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     result: "success",
     data,
+  });
+});
+
+export const getPeriodYearMonthMarketItemPrice = asyncHandler(
+  async (req, res, next) => {
+    const { itemName, year, month, startDate, endDate } = req.query;
+
+    let parsedStartDate: Date | undefined;
+    let parsedEndDate: Date | undefined;
+
+    // Check if year and month values are provided
+    if (year && month) {
+      const parsedYear = parseInt(year as string);
+      const parsedMonth = parseInt(month as string);
+      if (!isNaN(parsedYear) && !isNaN(parsedMonth)) {
+        parsedStartDate = new Date(parsedYear, parsedMonth - 1, 1);
+        parsedEndDate = new Date(parsedYear, parsedMonth, 0, 23, 59, 59, 999);
+      }
+    }
+
+    const data = await MarketItemStatsModel.find({
+      itemName: itemName as string,
+      date: {
+        $gte: dayjs(parsedStartDate).format("YYYY-MM-DD") || startDate,
+        $lte: dayjs(parsedEndDate).format("YYYY-MM-DD") || endDate,
+      },
+    });
+
+    return res.status(200).json({
+      result: "success",
+      data,
+    });
+  }
+);
+
+export const testtest = asyncHandler(async (req, res, next) => {
+  const data1 = await MarketItemStatsModel.find({ date: "2023-03-30" });
+
+  for (let index = 0; index < data1.length; index++) {
+    const itemName = data1[index].itemName;
+    if (!data1[index].itemName.includes("보석")) {
+      const singleRecord = await MarketItemModel.findOne({
+        itemName: data1[index].itemName,
+      });
+      if (singleRecord?.itemId) {
+        const result = await MarketItemStatsModel.updateMany(
+          {
+            itemName: data1[index].itemName,
+          },
+          { itemId: singleRecord.itemId }
+        );
+      }
+    } else {
+      const singleRecord = await AuctionItemModel.findOne({
+        itemName: data1[index].itemName,
+      });
+
+      if (singleRecord?.itemName) {
+        const result = await AuctionItemModel.updateMany(
+          {
+            itemName,
+          },
+          {
+            itemId: `gem${extractNumber(itemName)}_${
+              itemName.includes("멸화") ? "D" : "C"
+            }_66666666`,
+          }
+        );
+      }
+    }
+  }
+
+  return res.status(200).json({
+    result: "success",
   });
 });
 
