@@ -12,6 +12,9 @@ const MarketItemStatsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  itemId: {
+    type: String,
+  },
   date: {
     type: String,
     required: true,

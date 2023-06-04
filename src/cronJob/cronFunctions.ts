@@ -5,6 +5,7 @@ import AuctionItemModel from "../models/AuctionItem";
 import CustomError from "../utils/CustomError";
 import MarketItemStatsModel from "../models/MarketItemStats";
 import dayjs from "dayjs";
+import { extractNumber } from "../utils/customFunc";
 
 interface MarketItemRecordObj {
   Id: Number;
@@ -224,7 +225,7 @@ const calcMarketItemsStats = async () => {
         },
         {
           $group: {
-            _id: "$itemName",
+            _id: { itemName: "$itemName", itemId: "$itemId" },
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
             avgItemPrice: { $avg: "$currentMinPrice" },
@@ -237,7 +238,11 @@ const calcMarketItemsStats = async () => {
 
         // Update or create a new MarketItemStats record
         await MarketItemStatsModel.findOneAndUpdate(
-          { itemName: itemStats._id, date: currentDate },
+          {
+            itemName: itemStats._id.itemName,
+            itemId: itemStats._id.itemId,
+            date: currentDate,
+          },
           {
             itemName: itemStats._id,
             date: currentDate,
@@ -274,6 +279,7 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
               month: { $month: "$date" },
               year: { $year: "$date" },
               itemName: "$itemName",
+              itemId: "$itemId",
             },
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
@@ -284,6 +290,7 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
           $project: {
             _id: 0,
             itemName: "$_id.itemName",
+            itemId: "$_id.itemId",
             formattedDate: 1,
             avgItemPrice: 1,
             minItemPrice: 1,
@@ -296,7 +303,11 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
         const itemStats = stats[0];
 
         await MarketItemStatsModel.findOneAndUpdate(
-          { itemName: itemStats.itemName, date: currentDate },
+          {
+            itemName: itemStats.itemName,
+            itemId: itemStats.itemId,
+            date: currentDate,
+          },
           {
             itemName: itemStats.itemName,
             date: currentDate,
@@ -374,6 +385,9 @@ const calcAuctionItemsStats = async () => {
             minCurrentMinPrice: minBuyPrice,
             maxCurrentMinPrice: maxBuyPrice,
             date: startDate,
+            itemId: `gem${extractNumber(gemName)}_${
+              gemName.includes("멸화") ? "D" : "C"
+            }_66666666`,
           },
           {
             upsert: true,
