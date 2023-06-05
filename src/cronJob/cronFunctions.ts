@@ -5,6 +5,7 @@ import AuctionItemModel from "../models/AuctionItem";
 import CustomError from "../utils/CustomError";
 import MarketItemStatsModel from "../models/MarketItemStats";
 import dayjs from "dayjs";
+import { extractNumber } from "../utils/customFunc";
 
 interface MarketItemRecordObj {
   Id: Number;
@@ -181,6 +182,9 @@ const saveGemItemsPrice = async () => {
 
         const newAuctionRecord = new AuctionItemModel({
           itemName: extractOneGem.Name,
+          itemId: `gem${extractNumber(gemName)}_${
+            gemName.includes("멸화") ? "D" : "C"
+          }_66666666`,
           itemGrade: extractOneGem.Grade,
           itemTier: extractOneGem.Tier,
           itemGradeQuality: extractOneGem.GradeQuality,
@@ -224,7 +228,7 @@ const calcMarketItemsStats = async () => {
         },
         {
           $group: {
-            _id: "$itemName",
+            _id: { itemName: "$itemName", itemId: "$itemId" }, // _id: "$itemName"
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
             avgItemPrice: { $avg: "$currentMinPrice" },
@@ -237,9 +241,13 @@ const calcMarketItemsStats = async () => {
 
         // Update or create a new MarketItemStats record
         await MarketItemStatsModel.findOneAndUpdate(
-          { itemName: itemStats._id, date: currentDate },
           {
-            itemName: itemStats._id,
+            itemName: itemStats._id.itemName,
+            date: currentDate,
+          },
+          {
+            itemName: itemStats._id.itemName,
+            itemId: itemStats._id.itemId,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -274,6 +282,7 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
               month: { $month: "$date" },
               year: { $year: "$date" },
               itemName: "$itemName",
+              itemId: "$itemId",
             },
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
@@ -284,6 +293,7 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
           $project: {
             _id: 0,
             itemName: "$_id.itemName",
+            itemId: "$_id.itemId",
             formattedDate: 1,
             avgItemPrice: 1,
             minItemPrice: 1,
@@ -296,9 +306,13 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
         const itemStats = stats[0];
 
         await MarketItemStatsModel.findOneAndUpdate(
-          { itemName: itemStats.itemName, date: currentDate },
           {
             itemName: itemStats.itemName,
+            date: currentDate,
+          },
+          {
+            itemName: itemStats.itemName,
+            itemId: itemStats.itemId,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -370,6 +384,9 @@ const calcAuctionItemsStats = async () => {
           { itemName, date: startDate },
           {
             itemName: gemName,
+            itemId: `gem${extractNumber(gemName)}_${
+              gemName.includes("멸화") ? "D" : "C"
+            }_66666666`,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
             maxCurrentMinPrice: maxBuyPrice,

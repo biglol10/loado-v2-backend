@@ -92,7 +92,7 @@ export const testtest = asyncHandler(async (req, res, next) => {
         itemName: data1[index].itemName,
       });
       if (singleRecord?.itemId) {
-        const result = await MarketItemStatsModel.updateMany(
+        await MarketItemStatsModel.updateMany(
           {
             itemName: data1[index].itemName,
           },
@@ -105,7 +105,17 @@ export const testtest = asyncHandler(async (req, res, next) => {
       });
 
       if (singleRecord?.itemName) {
-        const result = await AuctionItemModel.updateMany(
+        await AuctionItemModel.updateMany(
+          {
+            itemName,
+          },
+          {
+            itemId: `gem${extractNumber(itemName)}_${
+              itemName.includes("멸화") ? "D" : "C"
+            }_66666666`,
+          }
+        );
+        await MarketItemStatsModel.updateMany(
           {
             itemName,
           },
