@@ -225,7 +225,7 @@ const calcMarketItemsStats = async () => {
         },
         {
           $group: {
-            _id: { itemName: "$itemName", itemId: "$itemId" },
+            _id: { itemName: "$itemName", itemId: "$itemId" }, // _id: "$itemName"
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
             avgItemPrice: { $avg: "$currentMinPrice" },
@@ -240,11 +240,11 @@ const calcMarketItemsStats = async () => {
         await MarketItemStatsModel.findOneAndUpdate(
           {
             itemName: itemStats._id.itemName,
-            itemId: itemStats._id.itemId,
             date: currentDate,
           },
           {
-            itemName: itemStats._id,
+            itemName: itemStats._id.itemName,
+            itemId: itemStats._id.itemId,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -305,11 +305,11 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
         await MarketItemStatsModel.findOneAndUpdate(
           {
             itemName: itemStats.itemName,
-            itemId: itemStats.itemId,
             date: currentDate,
           },
           {
             itemName: itemStats.itemName,
+            itemId: itemStats.itemId,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -381,13 +381,13 @@ const calcAuctionItemsStats = async () => {
           { itemName, date: startDate },
           {
             itemName: gemName,
+            itemId: `gem${extractNumber(gemName)}_${
+              gemName.includes("멸화") ? "D" : "C"
+            }_66666666`,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
             maxCurrentMinPrice: maxBuyPrice,
             date: startDate,
-            itemId: `gem${extractNumber(gemName)}_${
-              gemName.includes("멸화") ? "D" : "C"
-            }_66666666`,
           },
           {
             upsert: true,
