@@ -182,6 +182,9 @@ const saveGemItemsPrice = async () => {
 
         const newAuctionRecord = new AuctionItemModel({
           itemName: extractOneGem.Name,
+          itemId: `gem${extractNumber(gemName)}_${
+            gemName.includes("멸화") ? "D" : "C"
+          }_66666666`,
           itemGrade: extractOneGem.Grade,
           itemTier: extractOneGem.Tier,
           itemGradeQuality: extractOneGem.GradeQuality,
