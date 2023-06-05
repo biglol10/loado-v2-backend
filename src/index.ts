@@ -24,7 +24,12 @@ connectDB();
 // Middleware to parse JSON request body
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+
+const corsOptions = {
+  origin: "https://your-vercel-frontend-domain.com",
+};
+
+app.use(cors(corsOptions));
 
 app.use("/api/loadoPrice", lostArkItemPriceRoute);
 
