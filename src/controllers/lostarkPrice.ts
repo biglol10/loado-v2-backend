@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import AuctionItemModel from "../models/AuctionItem";
 import MarketItemStatsModel from "../models/MarketItemStats";
 import { extractNumber } from "../utils/customFunc";
+import CustomError from "../utils/CustomError";
 
 export const getLostArkMarketItemPrice = asyncHandler(
   async (req, res, next) => {}
@@ -82,50 +83,28 @@ export const getPeriodYearMonthMarketItemPrice = asyncHandler(
   }
 );
 
+// categoryCode mapping
 export const testtest = asyncHandler(async (req, res, next) => {
-  const data1 = await MarketItemStatsModel.find({ date: "2023-03-30" });
-
-  for (let index = 0; index < data1.length; index++) {
-    const itemName = data1[index].itemName;
-    if (!data1[index].itemName.includes("보석")) {
-      const singleRecord = await MarketItemModel.findOne({
-        itemName: data1[index].itemName,
-      });
-      if (singleRecord?.itemId) {
-        await MarketItemStatsModel.updateMany(
-          {
-            itemName: data1[index].itemName,
-          },
-          { itemId: singleRecord.itemId }
-        );
-      }
-    } else {
-      const singleRecord = await AuctionItemModel.findOne({
-        itemName: data1[index].itemName,
+  const data = await MarketItemModel.find({
+    createdAt: { $regex: /^2023-06-11 16/ },
+  });
+  for (let index = 0; index < data.length; index++) {
+    const element = data[index];
+    try {
+      const recordsToUpdate = await MarketItemStatsModel.find({
+        itemName: element.itemName,
       });
 
-      if (singleRecord?.itemName) {
-        await AuctionItemModel.updateMany(
-          {
-            itemName,
-          },
-          {
-            itemId: `gem${extractNumber(itemName)}_${
-              itemName.includes("멸화") ? "D" : "C"
-            }_66666666`,
-          }
-        );
-        await MarketItemStatsModel.updateMany(
-          {
-            itemName,
-          },
-          {
-            itemId: `gem${extractNumber(itemName)}_${
-              itemName.includes("멸화") ? "D" : "C"
-            }_66666666`,
-          }
-        );
+      // Update the categoryCode for each record
+      for (const record of recordsToUpdate) {
+        record.categoryCode = element.categoryCode;
+        await record.save();
       }
+
+      console.log("Records updated successfully.");
+    } catch (error) {
+      console.log(`Error when updating ${element.itemName}`);
+      console.error("Error updating records:", error);
     }
   }
 

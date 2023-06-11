@@ -45,7 +45,67 @@ interface AuctionItemRecordObj {
   Options: [IOptions];
 }
 
+const categoryCodeArr = [50010, 50020, 51000, 51100];
+
 const saveMarketItemsPrice = async () => {
+  for (const categoryCode of categoryCodeArr) {
+    for (let pageNo = 1; pageNo < 6; pageNo++) {
+      const itemRes = await BaseService.request({
+        method: "post",
+        url: "/markets/items",
+        data: {
+          Sort: "CURRENT_MIN_PRICE",
+          CategoryCode: categoryCode,
+          ItemTier: 3,
+          PageNo: pageNo,
+          SortCondition: "DESC",
+        },
+      });
+
+      if (itemRes.hasOwnProperty("Items")) {
+        if (itemRes["Items"].length === 0) {
+          break;
+        } else {
+          try {
+            for (const exactItem of itemRes["Items"]) {
+              const newMarketRecord = new MarketItemModel({
+                itemId: exactItem.Id,
+                itemName: exactItem.Name,
+                itemGrade: exactItem.Grade,
+                yDayAvgPrice: exactItem.YDayAvgPrice,
+                recentPrice: exactItem.RecentPrice,
+                currentMinPrice: exactItem.CurrentMinPrice,
+                categoryCode,
+              });
+
+              await newMarketRecord.save();
+            }
+          } catch {
+            throw new CustomError(
+              "[saveMarketItemsPrice] something wrong inside hasOwnProperty",
+              {
+                itemResItems: itemRes,
+                origin: "[saveMarketItemsPrice]",
+              }
+            );
+          }
+        }
+      } else {
+        throw new CustomError(
+          "[saveMarketItemsPrice] Items property does not exist",
+          {
+            itemResItems: itemRes,
+            categoryCode,
+            origin: "[saveBookItemsPrice]",
+          }
+        );
+      }
+    }
+  }
+};
+
+// not used
+const saveMarketItemsPrice2 = async () => {
   for (const itemName of marketItemsArr) {
     const itemRes = await BaseService.request({
       method: "post",
@@ -252,6 +312,7 @@ const calcMarketItemsStats = async () => {
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
             avgCurrentMinPrice: itemStats.avgItemPrice,
+            categoryCode: itemStats.categoryCode,
           },
           { upsert: true }
         );

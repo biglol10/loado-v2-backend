@@ -15,6 +15,9 @@ const MarketItemStatsSchema = new mongoose.Schema({
   itemId: {
     type: String,
   },
+  categoryCode: {
+    type: Number,
+  },
   date: {
     type: String,
     required: true,

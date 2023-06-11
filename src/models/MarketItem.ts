@@ -16,6 +16,9 @@ const MarketItemSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  categoryCode: {
+    type: Number,
+  },
   itemGrade: String,
   yDayAvgPrice: {
     type: Number,
