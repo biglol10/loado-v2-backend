@@ -53,7 +53,7 @@ export const getPeriodMarketItemPrice = asyncHandler(async (req, res, next) => {
 
 export const getPeriodYearMonthMarketItemPrice = asyncHandler(
   async (req, res, next) => {
-    const { itemName, year, month, startDate, endDate } = req.query;
+    const { itemId, year, month, startDate, endDate } = req.query;
 
     let parsedStartDate: Date | undefined;
     let parsedEndDate: Date | undefined;
@@ -69,7 +69,7 @@ export const getPeriodYearMonthMarketItemPrice = asyncHandler(
     }
 
     const data = await MarketItemStatsModel.find({
-      itemName: itemName as string,
+      itemId: itemId as string,
       date: {
         $gte: dayjs(parsedStartDate).format("YYYY-MM-DD") || startDate,
         $lte: dayjs(parsedEndDate).format("YYYY-MM-DD") || endDate,
