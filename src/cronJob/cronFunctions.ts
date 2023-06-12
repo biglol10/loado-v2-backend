@@ -381,8 +381,8 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
             categoryCode:
               itemStats.itemName.includes("[") &&
               itemStats.itemName.includes("]")
-                ? 77720
-                : 77710,
+                ? 44420
+                : 44410,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -457,7 +457,7 @@ const calcAuctionItemsStats = async () => {
             itemId: `gem${extractNumber(gemName)}_${
               gemName.includes("멸화") ? "D" : "C"
             }_66666666`,
-            categoryCode: 66610,
+            categoryCode: 210000,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
             maxCurrentMinPrice: maxBuyPrice,
