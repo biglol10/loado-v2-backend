@@ -35,6 +35,9 @@ const AuctionItemSchema = new mongoose.Schema({
   itemId: {
     type: String,
   },
+  categoryCode: {
+    type: Number,
+  },
   itemGrade: String,
   itemTier: Number,
   itemGradeQuality: Number,

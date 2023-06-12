@@ -187,6 +187,10 @@ const saveBookItemsPrice = async () => {
             itemId: bookItem.Id,
             itemName: bookItem.Name,
             itemGrade: bookItem.Grade,
+            categoryCode:
+              bookItem.Name.includes("[") && bookItem.Name.includes("]")
+                ? 44420
+                : 44410,
             yDayAvgPrice: bookItem.YDayAvgPrice,
             recentPrice: bookItem.RecentPrice,
             currentMinPrice: bookItem.CurrentMinPrice,
@@ -245,6 +249,7 @@ const saveGemItemsPrice = async () => {
           itemId: `gem${extractNumber(gemName)}_${
             gemName.includes("멸화") ? "D" : "C"
           }_66666666`,
+          categoryCode: 210000,
           itemGrade: extractOneGem.Grade,
           itemTier: extractOneGem.Tier,
           itemGradeQuality: extractOneGem.GradeQuality,
