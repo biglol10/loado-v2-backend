@@ -85,28 +85,53 @@ export const getPeriodYearMonthMarketItemPrice = asyncHandler(
 
 // categoryCode mapping
 export const testtest = asyncHandler(async (req, res, next) => {
-  const data = await MarketItemModel.find({
-    createdAt: { $regex: /^2023-06-11 16/ },
-  });
-  for (let index = 0; index < data.length; index++) {
-    const element = data[index];
-    try {
-      const recordsToUpdate = await MarketItemStatsModel.find({
-        itemName: element.itemName,
-      });
+  const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
+  const stats = await MarketItemModel.aggregate([
+    {
+      $match: {
+        itemName: "태양의 은총",
+        createdAt: { $gte: currentDate },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          itemName: "$itemName",
+          itemId: "$itemId",
+          categoryCode: "$categoryCode",
+        }, // _id: "$itemName"
+        minItemPrice: { $min: "$currentMinPrice" },
+        maxItemPrice: { $max: "$currentMinPrice" },
+        avgItemPrice: { $avg: "$currentMinPrice" },
+        categoryCode: { $first: "$categoryCode" },
+      },
+    },
+  ]);
 
-      // Update the categoryCode for each record
-      for (const record of recordsToUpdate) {
-        record.categoryCode = element.categoryCode;
-        await record.save();
-      }
+  console.log(stats);
 
-      console.log("Records updated successfully.");
-    } catch (error) {
-      console.log(`Error when updating ${element.itemName}`);
-      console.error("Error updating records:", error);
-    }
-  }
+  // const data = await MarketItemModel.find({
+  //   createdAt: { $regex: /^2023-06-11 16/ },
+  // });
+  // for (let index = 0; index < data.length; index++) {
+  //   const element = data[index];
+  //   try {
+  //     const recordsToUpdate = await MarketItemStatsModel.find({
+  //       itemName: element.itemName,
+  //     });
+
+  //     // Update the categoryCode for each record
+  //     for (const record of recordsToUpdate) {
+  //       record.categoryCode = element.categoryCode;
+  //       await record.save();
+  //     }
+
+  //     console.log("Records updated successfully.");
+  //   } catch (error) {
+  //     console.log(`Error when updating ${element.itemName}`);
+  //     console.error("Error updating records:", error);
+  //   }
+  // }
 
   return res.status(200).json({
     result: "success",

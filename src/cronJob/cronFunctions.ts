@@ -288,7 +288,11 @@ const calcMarketItemsStats = async () => {
         },
         {
           $group: {
-            _id: { itemName: "$itemName", itemId: "$itemId" }, // _id: "$itemName"
+            _id: {
+              itemName: "$itemName",
+              itemId: "$itemId",
+              categoryCode: "$categoryCode",
+            }, // _id: "$itemName"
             minItemPrice: { $min: "$currentMinPrice" },
             maxItemPrice: { $max: "$currentMinPrice" },
             avgItemPrice: { $avg: "$currentMinPrice" },
@@ -308,11 +312,11 @@ const calcMarketItemsStats = async () => {
           {
             itemName: itemStats._id.itemName,
             itemId: itemStats._id.itemId,
+            categoryCode: itemStats._id.categoryCode,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
             avgCurrentMinPrice: itemStats.avgItemPrice,
-            categoryCode: itemStats.categoryCode,
           },
           { upsert: true }
         );
@@ -374,6 +378,11 @@ const calcBookItemsStats = async (bookNameArr: string[]) => {
           {
             itemName: itemStats.itemName,
             itemId: itemStats.itemId,
+            categoryCode:
+              itemStats.itemName.includes("[") &&
+              itemStats.itemName.includes("]")
+                ? 77720
+                : 77710,
             date: currentDate,
             minCurrentMinPrice: itemStats.minItemPrice,
             maxCurrentMinPrice: itemStats.maxItemPrice,
@@ -448,6 +457,7 @@ const calcAuctionItemsStats = async () => {
             itemId: `gem${extractNumber(gemName)}_${
               gemName.includes("멸화") ? "D" : "C"
             }_66666666`,
+            categoryCode: 66610,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
             maxCurrentMinPrice: maxBuyPrice,
