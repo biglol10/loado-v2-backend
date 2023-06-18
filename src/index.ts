@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: "https://your-vercel-frontend-domain.com",
+  origin: "https://loado-v2.vercel.app",
 };
 
 app.use(cors(corsOptions));
