@@ -6,6 +6,7 @@ import {
   getPeriodMarketItemPrice,
   getPeriodYearMonthMarketItemPrice,
   testtest,
+  getMarketPriceByCategoryCode
 } from "../controllers/lostarkPrice";
 
 const router = Router();
@@ -20,5 +21,6 @@ router.get(
   getPeriodYearMonthMarketItemPrice
 );
 router.get("/testtest", testtest);
+router.get('/getMarketPriceByCategoryCode', getMarketPriceByCategoryCode);
 
 export default router;

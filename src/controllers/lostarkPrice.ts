@@ -353,3 +353,17 @@ export const setLostArkMarketItemPrice = asyncHandler(
     throw new Error("Item not found");
   }
 );
+
+export const getMarketPriceByCategoryCode = asyncHandler(
+  async (req, res) => {
+    const { categoryCode } = req.query;
+    const data = await MarketItemModel.find({
+      categoryCode: Number(categoryCode),
+    });
+
+    return res.status(200).json({
+      result: "success",
+      data,
+    });
+  }
+);
