@@ -359,7 +359,7 @@ export const getMarketPriceByCategoryCode = asyncHandler(
     const { categoryCode } = req.query;
     const data = await MarketItemModel.find({
       categoryCode: Number(categoryCode),
-    });
+    }).limit(20);
 
     return res.status(200).json({
       result: "success",
