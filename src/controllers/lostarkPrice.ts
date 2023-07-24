@@ -356,10 +356,14 @@ export const setLostArkMarketItemPrice = asyncHandler(
 
 export const getMarketPriceByCategoryCode = asyncHandler(
   async (req, res) => {
-    const { categoryCode } = req.query;
-    const data = await MarketItemModel.find({
+    const { categoryCode, timeValue } = req.query;
+
+    const data = await MarketItemStatsModel.find({
       categoryCode: Number(categoryCode),
+      date: timeValue
     }).limit(20);
+
+    
 
     return res.status(200).json({
       result: "success",
