@@ -354,20 +354,22 @@ export const setLostArkMarketItemPrice = asyncHandler(
   }
 );
 
-export const getMarketPriceByCategoryCode = asyncHandler(
-  async (req, res) => {
-    const { categoryCode, timeValue } = req.query;
+export const getMarketPriceByCategoryCode = asyncHandler(async (req, res) => {
+  const { categoryCode, timeValue } = req.query;
 
-    const data = await MarketItemStatsModel.find({
-      categoryCode: Number(categoryCode),
-      date: timeValue
-    }).limit(20);
+  const latestStats = await MarketItemStatsModel.findOne()
+    .sort({ date: -1 })
+    .exec();
 
-    
+  const latestDate = latestStats?.date;
 
-    return res.status(200).json({
-      result: "success",
-      data,
-    });
-  }
-);
+  const data = await MarketItemStatsModel.find({
+    categoryCode: Number(categoryCode),
+    date: latestDate || timeValue,
+  }).limit(20);
+
+  return res.status(200).json({
+    result: "success",
+    data,
+  });
+});
