@@ -27,7 +27,6 @@ const kstJob = async () => {
       // if (kstTime.hour() === 0)
       //   await new Promise((res) => setTimeout(res, 1800000));
 
-      console.log("came to 6hour", kstTime.format());
       await saveMarketItemsPrice();
       const bookNameArr = await saveBookItemsPrice();
       await saveGemItemsPrice(); // await 안 쓰면 에러 났을 때 catch clause에 안 가는듯
