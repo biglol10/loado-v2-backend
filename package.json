@@ -8,7 +8,9 @@
     "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/index.ts",
     "start:Docker": "cross-env NODE_ENV=production nodemon -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
-    "serve": "cross-env NODE_ENV=production node dist/index.js"
+    "serve": "cross-env NODE_ENV=production node dist/index.js",
+    "herokuStart": "node dist/index.js",
+    "postinstall": "tsc"
   },
   "author": "biglol",
   "license": "ISC",
