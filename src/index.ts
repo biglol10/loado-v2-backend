@@ -26,10 +26,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: ["https://loado-v2.vercel.app"],
+  origin: "https://loado-v2.vercel.app",
+  credentials: true,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use("/api/loadoPrice", lostArkItemPriceRoute);
 
