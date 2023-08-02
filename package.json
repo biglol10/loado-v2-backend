@@ -4,7 +4,7 @@
   "description": "Loado Version 2 Backend",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
     "dev": "cross-env NODE_ENV=development nodemon -r tsconfig-paths/register src/index.ts",
     "start:Docker": "cross-env NODE_ENV=production nodemon -r tsconfig-paths/register src/index.ts",
     "build": "tsc",
