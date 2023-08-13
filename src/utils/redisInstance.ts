@@ -5,11 +5,11 @@ const redisClientUrl =
     ? "127.0.0.1:6379"
     : process.env.REDIS_ENDPOINT;
 
-// const redisInstance = createClient({
-//   url: redisClientUrl,
-// });
+const redisInstance = createClient({
+  url: redisClientUrl,
+});
 
-const redisInstance = createClient();
+// const redisInstance = createClient();
 
 redisInstance.on("error", (err) => console.log("Redis Client Error", err));
 redisInstance.connect();
