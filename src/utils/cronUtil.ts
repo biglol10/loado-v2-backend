@@ -9,6 +9,8 @@ import {
 } from "../cronJob/cronFunctions";
 import ErrorLogModel from "../models/ErrorLog";
 import CustomError from "./CustomError";
+import MarketItemStatsModel from "../models/MarketItemStats";
+import redisInstance from "./redisInstance";
 
 const kstJob = async () => {
   const kstTime = dayjs().tz("Asia/Seoul");
@@ -35,6 +37,9 @@ const kstJob = async () => {
       await calcMarketItemsStats();
       await calcBookItemsStats(bookNameArr);
       await calcAuctionItemsStats();
+
+      // aggregate 작업이 끝난 후 api 캐싱 적용
+      await cacheDataAfterCron();
     } catch (err) {
       if (err instanceof CustomError) {
         const newErrorRecord = new ErrorLogModel({
@@ -53,6 +58,37 @@ const kstJob = async () => {
         newErrorRecord.save();
       }
     }
+  }
+};
+
+const cacheDataAfterCron = async () => {
+  const categoryCodes = [
+    "44410",
+    "44420",
+    "50010",
+    "50020",
+    "51000",
+    "51100",
+    "210000",
+  ];
+
+  const latestStats = await MarketItemStatsModel.findOne()
+    .sort({ date: -1 })
+    .exec();
+
+  const latestDate = latestStats?.date;
+
+  for (let categoryCode in categoryCodes) {
+    const data = await MarketItemStatsModel.find({
+      categoryCode: Number(categoryCode),
+      date: latestDate || dayjs().format("YYYY-MM-DD"),
+    }).limit(20);
+
+    redisInstance.set(
+      `/api/loadoPrice/getMarketPriceByCategoryCode?categoryCode=${categoryCode}`,
+      JSON.stringify(data),
+      { EX: 18000 }
+    );
   }
 };
 
