@@ -1,11 +1,13 @@
 import { createClient } from "redis";
 
-const redisInstance =
-  process.env.npm_lifecycle_event === "dev"
-    ? createClient()
-    : createClient({
-        url: process.env.REDIS_ENDPOINT,
-      });
+const redisClientUrl =
+  process.env.NODE_ENV === "dev"
+    ? "127.0.0.1:6379"
+    : process.env.REDIS_ENDPOINT;
+
+const redisInstance = createClient({
+  url: redisClientUrl,
+});
 
 redisInstance.on("error", (err) => console.log("Redis Client Error", err));
 redisInstance.connect();
