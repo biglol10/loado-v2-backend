@@ -11,6 +11,10 @@ const redisMiddleware = async (
   try {
     const cachedData = await redisInstance.get(cacheKey);
 
+    console.log(`cacheKey is ${cacheKey}`);
+    console.log("cachedData is");
+    console.log(cachedData);
+
     if (cachedData) {
       res.json(JSON.parse(cachedData));
     } else {
