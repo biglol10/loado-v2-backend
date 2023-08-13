@@ -1,9 +1,7 @@
 import { createClient } from "redis";
 
 const redisClientUrl =
-  process.env.NODE_ENV === "dev"
-    ? "127.0.0.1:6379"
-    : process.env.REDIS_ENDPOINT;
+  process.env.NODE_ENV === "dev" ? "127.0.0.1:6379" : process.env.REDIS_URL;
 
 const redisInstance = createClient({
   url: redisClientUrl,
