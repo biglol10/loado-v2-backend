@@ -19,7 +19,7 @@ const redisMiddleware = async (
       const originalJson = res.json;
       res.json = (data) => {
         // Cache the response data
-        redisInstance.set(cacheKey, JSON.stringify(data), { EX: 600 }); // Set expiry in seconds (e.g., 300 seconds)
+        redisInstance.set(cacheKey, JSON.stringify(data), { EX: 21600 }); // Set expiry in seconds (6 hours)
 
         // Call the original res.json method to send the response
         return originalJson.call(res, data); // Return the result of the original method

@@ -10,7 +10,8 @@
     "build": "tsc",
     "serve": "cross-env NODE_ENV=production node dist/index.js",
     "herokuStart": "node dist/index.js",
-    "postinstall": "tsc"
+    "postinstall": "tsc",
+    "redis": "redis-server"
   },
   "author": "biglol",
   "license": "ISC",
