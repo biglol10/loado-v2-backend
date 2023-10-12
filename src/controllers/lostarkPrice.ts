@@ -85,28 +85,64 @@ export const getPeriodYearMonthMarketItemPrice = asyncHandler(
 
 // categoryCode mapping
 export const testtest = asyncHandler(async (req, res, next) => {
-  const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
-  const stats = await MarketItemModel.aggregate([
-    {
-      $match: {
-        itemName: "태양의 은총",
-        createdAt: { $gte: currentDate },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          itemName: "$itemName",
-          itemId: "$itemId",
-          categoryCode: "$categoryCode",
-        }, // _id: "$itemName"
-        minItemPrice: { $min: "$currentMinPrice" },
-        maxItemPrice: { $max: "$currentMinPrice" },
-        avgItemPrice: { $avg: "$currentMinPrice" },
-        categoryCode: { $first: "$categoryCode" },
-      },
-    },
-  ]);
+  try {
+    const marketItemsArr = [
+      "마력석 조각",
+      "야금술 : 단조 전문",
+      "야금술 : 단조 복합",
+      "재봉술 : 수선 전문",
+      "재봉술 : 수선 복합",
+    ];
+    for (const itemName of marketItemsArr) {
+      const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD");
+      const stats = await MarketItemModel.aggregate([
+        {
+          $match: {
+            itemName: itemName,
+            createdAt: { $regex: /^2023-10-11/ },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              itemName: "$itemName",
+              itemId: "$itemId",
+              categoryCode: "$categoryCode",
+            }, // _id: "$itemName"
+            minItemPrice: { $min: "$currentMinPrice" },
+            maxItemPrice: { $max: "$currentMinPrice" },
+            avgItemPrice: { $avg: "$currentMinPrice" },
+          },
+        },
+      ]);
+
+      if (stats.length > 0) {
+        const itemStats = stats[0];
+
+        // Update or create a new MarketItemStats record
+        await MarketItemStatsModel.findOneAndUpdate(
+          {
+            itemName: itemStats._id.itemName,
+            date: "2023-10-11",
+          },
+          {
+            itemName: itemStats._id.itemName,
+            itemId: itemStats._id.itemId,
+            categoryCode: itemStats._id.categoryCode,
+            date: "2023-10-11",
+            minCurrentMinPrice: itemStats.minItemPrice,
+            maxCurrentMinPrice: itemStats.maxItemPrice,
+            avgCurrentMinPrice: itemStats.avgItemPrice,
+          },
+          { upsert: true }
+        );
+      }
+    }
+  } catch {
+    throw new CustomError("[calcMarketItemsStats] error when aggregating", {
+      origin: "[calcMarketItemsStats]",
+    });
+  }
 
   return res.status(200).json({
     result: "success",
