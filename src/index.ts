@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import cron from "node-cron";
+import http from "http";
 import { errorHandler } from "./middleware/middlewares";
 import lostArkItemPriceRoute from "./routes/itemPrice";
 import connectDB from "./db/mongoDB";
@@ -51,3 +52,8 @@ app.listen(port, () => {
 
 // cron.schedule("* * * * *", kstJob);
 cron.schedule("* * * * *", kstJob);
+
+// app Eco dyno로 변경 후 sleep 방지하기 위함
+cron.schedule("*/25 * * * *", () => {
+  http.get("https://loadov2backend-a6fed76ac691.herokuapp.com/");
+});
