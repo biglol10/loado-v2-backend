@@ -9,6 +9,7 @@ import cron from "node-cron";
 import http from "http";
 import { errorHandler } from "./middleware/middlewares";
 import lostArkItemPriceRoute from "./routes/itemPrice";
+import userLogRoute from "./routes/userLog";
 import connectDB from "./db/mongoDB";
 import { kstJob } from "./utils/cronUtil";
 
@@ -34,6 +35,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/api/loadoPrice", lostArkItemPriceRoute);
+app.use("/api/loadoCommon", userLogRoute);
 
 // Sample route
 // this should be below the routes or it will cause error
