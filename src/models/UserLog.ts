@@ -19,6 +19,8 @@ const UserLogSchema = new mongoose.Schema({
   },
   visitedPage: String,
   userRequest: UserRequestSchema,
+  isMobile: Boolean,
+  platform: String,
   createdAt: String,
 });
 
