@@ -11,7 +11,8 @@
     "serve": "cross-env NODE_ENV=production node dist/index.js",
     "herokuStart": "node dist/index.js",
     "postinstall": "tsc",
-    "redis": "redis-server"
+    "redis": "redis-server",
+    "redis-ex-port": "redis-server --port 6380"
   },
   "author": "biglol",
   "license": "ISC",
