@@ -6,15 +6,9 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const VisitedPageSchema = new mongoose.Schema({
-  pageId: String,
-  date: String,
-});
-
 const UserRequestSchema = new mongoose.Schema({
   method: String,
   url: String,
-  date: String,
   data: String,
 });
 
@@ -23,8 +17,8 @@ const UserLogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  visitedPages: [VisitedPageSchema],
-  userRequests: [UserRequestSchema],
+  visitedPage: String,
+  userRequest: UserRequestSchema,
   createdAt: String,
 });
 

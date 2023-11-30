@@ -2,16 +2,12 @@ import { asyncHandler } from "../middleware/middlewares";
 import UserLogModel from "../models/UserLog";
 
 export const saveUserLog = asyncHandler(async (req, res, next) => {
-  const { userAppId, visitedPages, userRequests } = req.body;
-
-  console.log(
-    `userAppId is ${userAppId} and visitedPages is ${visitedPages} and userRequests is ${userRequests}`
-  );
+  const { userAppId, visitedPage = null, userRequest = null } = req.body;
 
   new UserLogModel({
     userAppId,
-    visitedPages,
-    userRequests,
+    visitedPage,
+    userRequest,
   }).save();
 
   return res.status(200).json({
