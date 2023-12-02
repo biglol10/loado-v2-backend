@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import mongoose from "mongoose";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -38,7 +38,7 @@ const UserRequestSchema = new mongoose.Schema<UserRequest>({
   data: String,
   isMobile: Boolean,
   platform: String,
-  createdAt: String
+  createdAt: String,
 });
 
 const UserLogSchema = new mongoose.Schema<UserLog>({
@@ -51,26 +51,22 @@ const UserLogSchema = new mongoose.Schema<UserLog>({
   createdAt: String,
 });
 
-UserLogSchema.pre('save', function (next) {
-  this.createdAt = dayjs().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
+UserLogSchema.pre("save", function (next) {
+  this.createdAt = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD HH:mm:ss");
   next();
 });
 
-const UserLogModel = mongoose.model<UserLog>('UserLog', UserLogSchema);
+const UserLogModel = mongoose.model<UserLog>("UserLog", UserLogSchema);
 
 // Function to update or create a user log
-const updateUserLog = async (
-  userAppId: string, 
-  pageId?: string, 
-  userRequest?: UserRequest
-) => {
-  const currentDate = dayjs().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
-  
-  const update: { 
+const updateUserLog = async (userAppId: string, pageId?: string, userRequest?: UserRequest) => {
+  const currentDate = dayjs().tz("Asia/Seoul").format("YYYY-MM-DD HH:mm:ss");
+
+  const update: {
     $set: { createdAt: string };
     $push?: { visitedPages?: VisitedPage; userRequests?: UserRequest };
   } = {
-    $set: { createdAt: currentDate }
+    $set: { createdAt: currentDate },
   };
 
   if (pageId) {
@@ -78,15 +74,15 @@ const updateUserLog = async (
     update.$push = { ...update.$push, visitedPages: visitedPage };
   }
   if (userRequest) {
-    const userRequestWithCreatedAt = {...userRequest, createdAt: currentDate};
+    const userRequestWithCreatedAt = { ...userRequest, createdAt: currentDate };
     update.$push = { ...update.$push, userRequests: userRequestWithCreatedAt };
   }
-  
-  const options = { 
-    new: true, 
-    upsert: true
+
+  const options = {
+    new: true,
+    upsert: true,
   };
-  
+
   return UserLogModel.findOneAndUpdate({ userAppId }, update, options);
 };
 
