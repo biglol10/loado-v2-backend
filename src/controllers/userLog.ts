@@ -1,5 +1,5 @@
 import { asyncHandler } from "../middleware/middlewares";
-import UserLogModel from "../models/UserLog";
+import {updateUserLog} from "../models/UserLog";
 
 export const saveUserLog = asyncHandler(async (req, res, next) => {
   const {
@@ -7,16 +7,18 @@ export const saveUserLog = asyncHandler(async (req, res, next) => {
     visitedPage = null,
     userRequest = null,
     isMobile,
-    platform,
+    platform
   } = req.body;
 
-  new UserLogModel({
-    userAppId,
-    visitedPage,
-    userRequest,
-    isMobile,
-    platform,
-  }).save();
+  updateUserLog(userAppId, visitedPage, {...userRequest, isMobile, platform })
+
+  // new UserLogModel({
+  //   userAppId,
+  //   visitedPage,
+  //   userRequest,
+  //   isMobile,
+  //   platform,
+  // }).save();
 
   return res.status(200).json({
     result: "success",
