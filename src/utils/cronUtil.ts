@@ -6,6 +6,10 @@ import {
   calcMarketItemsStats,
   calcBookItemsStats,
   calcAuctionItemsStats,
+  saveRelicBookItemsPrice,
+  saveT4MarketItemsPrice,
+  saveT4GemItemsPrice,
+  calcT4AuctionItemsStats,
 } from "../cronJob/cronFunctions";
 import ErrorLogModel from "../models/ErrorLog";
 import CustomError from "./CustomError";
@@ -30,13 +34,18 @@ const kstJob = async () => {
       //   await new Promise((res) => setTimeout(res, 1800000));
 
       await saveMarketItemsPrice();
+      await saveT4MarketItemsPrice(); // 티4 재료 정보 저장
       const bookNameArr = await saveBookItemsPrice();
+      const relicBookNameArr = await saveRelicBookItemsPrice(); // 유물 각인서
       await saveGemItemsPrice(); // await 안 쓰면 에러 났을 때 catch clause에 안 가는듯
+      await saveT4GemItemsPrice();
 
       // aggregate 작업 (반정규화)
-      await calcMarketItemsStats();
+      await calcMarketItemsStats(); // 티3, 티4 둘다 있음
       await calcBookItemsStats(bookNameArr);
+      await calcBookItemsStats(relicBookNameArr);
       await calcAuctionItemsStats();
+      await calcT4AuctionItemsStats(); // 티4 보석 계산
 
       // aggregate 작업이 끝난 후 api 캐싱 삭제
       redisInstance.flushAll();
