@@ -381,7 +381,7 @@ const saveT4GemItemsPrice = async () => {
 
         const newAuctionRecord = new AuctionItemModel({
           itemName: extractOneGem.Name,
-          itemId: `gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
+          itemId: `t4_gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
           categoryCode: 210000,
           itemGrade: extractOneGem.Grade,
           itemTier: extractOneGem.Tier,
