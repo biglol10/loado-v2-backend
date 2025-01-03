@@ -274,7 +274,7 @@ const saveRelicBookItemsPrice = async () => {
           bookNameArr.push(`(유물)${bookItem.Name}`);
           const newBookRecord = new MarketItemModel({
             itemId: bookItem.Id,
-            itemName: bookItem.Name,
+            itemName: `(유물)${bookItem.Name}`,
             itemGrade: bookItem.Grade,
             categoryCode: bookItem.Name.includes("[") && bookItem.Name.includes("]") ? 44420 : 44410,
             yDayAvgPrice: bookItem.YDayAvgPrice,
