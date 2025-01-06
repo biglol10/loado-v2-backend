@@ -281,8 +281,8 @@ export const getMarketPriceByCategoryCode = asyncHandler(async (req, res) => {
 
   const data = await MarketItemStatsModel.find({
     categoryCode: Number(categoryCode),
-    date: latestDate || timeValue,
-  }).limit(20);
+    date: latestDate || timeValue
+  });
 
   return res.status(200).json({
     result: "success",
