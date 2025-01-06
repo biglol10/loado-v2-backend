@@ -284,13 +284,12 @@ export const getMarketPriceByCategoryCode = asyncHandler(async (req, res) => {
   if (categoryCodeNumber === 44410) {
     const data = await MarketItemStatsModel.find({
       categoryCode: categoryCodeNumber,
-      date: latestDate || timeValue,
-      minCurrentMinPrice: { $gte: 200 }
+      date: latestDate || timeValue
     });
 
     return res.status(200).json({
       result: "success",
-      data
+      data: data.filter((item) => item.minCurrentMinPrice >= 500)
     })
   } else {
     const data = await MarketItemStatsModel.find({
