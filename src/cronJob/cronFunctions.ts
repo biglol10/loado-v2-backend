@@ -649,7 +649,7 @@ const calcT4AuctionItemsStats = async () => {
           { itemName, date: startDate },
           {
             itemName: gemName,
-            itemId: `gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
+            itemId: `t4_gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
             categoryCode: 210000,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
