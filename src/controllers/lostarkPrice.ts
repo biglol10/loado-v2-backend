@@ -279,13 +279,27 @@ export const getMarketPriceByCategoryCode = asyncHandler(async (req, res) => {
 
   const latestDate = latestStats?.date;
 
-  const data = await MarketItemStatsModel.find({
-    categoryCode: Number(categoryCode),
-    date: latestDate || timeValue,
-  }).limit(20);
+  const categoryCodeNumber = Number(categoryCode);
 
-  return res.status(200).json({
-    result: "success",
-    data,
-  });
+  if (categoryCodeNumber === 44410) {
+    const data = await MarketItemStatsModel.find({
+      categoryCode: categoryCodeNumber,
+      date: latestDate || timeValue
+    });
+
+    return res.status(200).json({
+      result: "success",
+      data: data.filter((item) => item.minCurrentMinPrice >= 1000)
+    })
+  } else {
+    const data = await MarketItemStatsModel.find({
+      categoryCode: categoryCodeNumber,
+      date: latestDate || timeValue
+    }).limit(25);
+
+    return res.status(200).json({
+      result: "success",
+      data
+    })
+  }
 });

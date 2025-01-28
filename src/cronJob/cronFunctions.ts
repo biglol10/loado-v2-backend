@@ -274,7 +274,7 @@ const saveRelicBookItemsPrice = async () => {
           bookNameArr.push(`(유물)${bookItem.Name}`);
           const newBookRecord = new MarketItemModel({
             itemId: bookItem.Id,
-            itemName: bookItem.Name,
+            itemName: `(유물)${bookItem.Name}`,
             itemGrade: bookItem.Grade,
             categoryCode: bookItem.Name.includes("[") && bookItem.Name.includes("]") ? 44420 : 44410,
             yDayAvgPrice: bookItem.YDayAvgPrice,
@@ -381,7 +381,7 @@ const saveT4GemItemsPrice = async () => {
 
         const newAuctionRecord = new AuctionItemModel({
           itemName: extractOneGem.Name,
-          itemId: `gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
+          itemId: `t4_gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
           categoryCode: 210000,
           itemGrade: extractOneGem.Grade,
           itemTier: extractOneGem.Tier,
@@ -649,7 +649,7 @@ const calcT4AuctionItemsStats = async () => {
           { itemName, date: startDate },
           {
             itemName: gemName,
-            itemId: `gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
+            itemId: `t4_gem${extractNumber(gemName)}_${gemName.includes("겁화") ? "D" : "C"}_66666666`,
             categoryCode: 210000,
             avgCurrentMinPrice: avgBuyPrice,
             minCurrentMinPrice: minBuyPrice,
