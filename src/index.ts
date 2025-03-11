@@ -58,6 +58,6 @@ cron.schedule("* * * * *", kstJob);
 // app Eco dyno로 변경 후 sleep 방지하기 위함
 cron.schedule("*/1 * * * *", () => {
   http.get(
-    "https://loadov2backend-a6fed76ac691.herokuapp.com/api/loadoPrice/getPeriodYearMonthMarketItemPrice?itemId=66150010&year=2023&month=4"
+    "https://loadov2backend-a6fed76ac691.herokuapp.com"
   );
 });
