@@ -57,6 +57,7 @@ cron.schedule("* * * * *", kstJob);
 
 // app Eco dyno로 변경 후 sleep 방지하기 위함
 cron.schedule("*/5 * * * *", () => {
+  console.log('came to /5');
   http.get(
     "https://loadov2backend-a6fed76ac691.herokuapp.com"
   );
