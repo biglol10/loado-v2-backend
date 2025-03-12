@@ -19,7 +19,11 @@ import redisInstance from "./redisInstance";
 const kstJob = async () => {
   const kstTime = dayjs().tz("Asia/Seoul");
 
+  console.log('came to kstJob');
+
   if (process.env.NODE_ENV === "development") return;
+
+  console.log('came to kstJob 2');
 
   // Check if the current time in KST is 00:00, 06:00, 12:00, or 18:00
   if (
@@ -32,6 +36,8 @@ const kstJob = async () => {
       // // 00시엔 서버작업 때문인지 에러 발생
       // if (kstTime.hour() === 0)
       //   await new Promise((res) => setTimeout(res, 1800000));
+
+      console.log('came to actual kstJob');
 
       await saveMarketItemsPrice();
       await saveT4MarketItemsPrice(); // 티4 재료 정보 저장
